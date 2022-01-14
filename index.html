@@ -1,21 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
 </head>
 <body>
-    <div class="search-window">
-        <div class="container">
-            <input type="text" class="character input-field">
-            <button type="button" class="character search-button">Search</button>
-            <div class="log-area"></div>
-        </div>
-    </div>
+	<a href="#" id="login">
+		<img border="0" alt="Login with Amazon"
+		src="https://images-na.ssl-images-amazon.com/images/G/01/lwa/btnLWA_gold_156x32.png"
+		width="156" height="32" />
+	</a>
+	<div id="amazon-root"></div>
+	<script type="text/javascript">
+		var s3 = null;
+		var clientId = 'amzn1.application-oa2-client.5f232c81786441b8ad7bb4ec9251fda2'; // client ID
+		var roleArn = 'arn:aws:iam::<AWS_ACCOUNT_ID>:role/<WEB_IDENTITY_ROLE_NAME>';
+	
+		window.onAmazonLoginReady = function() {
+		amazon.Login.setClientId(clientId); // set client ID
+	
+		document.getElementById('login').onclick = function() {
+			amazon.Login.authorize({scope: 'profile'}, function(response) {
+			if (!response.error) { // logged in
+				AWS.config.credentials = new AWS.WebIdentityCredentials({
+				RoleArn: roleArn,
+				ProviderId: 'www.amazon.com',
+				WebIdentityToken: response.access_token
+				});
+	
+				s3 = new AWS.S3();
+	
+				console.log('You are now logged in.');
+			} else {
+				console.log('There was a problem logging you in.');
+			}
+			});
+		};
+		};
+	
+		(function(d) {
+		var a = d.createElement('script'); a.type = 'text/javascript';
+		a.async = true; a.id = 'amazon-login-sdk';
+		a.src = 'https://api-cdn.amazon.com/sdk/login1.js';
+		d.getElementById('amazon-root').appendChild(a);
+		})(document);
+	</script>
 </body>
 </html>
-
-ul>li*5>a[href=""]{menu$}
-
